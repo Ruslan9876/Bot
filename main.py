@@ -4,7 +4,7 @@ from telebot import types
 home_menu = ['Malumot olish','Online doktor','Oila','Yangiliklar']
 city_list = ['Toshkent', 'Samarqand', 'Buxoro', 'Fargona', 'Andijon', 'Namangan', 'Qashqadaryo', 'Surxondaryo', 'Jizzax', 'Sirdaryo', 'Xorazm', 'Navoiy', 'Toshkent viloyati', "Qoraqalpog'iston"]
 
-bot = telebot.TeleBot("7788275263:AAEK3czOJjFBFv-gWWZT6rPftnFwfM1hZGk")
+bot = telebot.TeleBot("7851101373:AAEZSNxhbJq9JuuRzs4vIwRzzb949emMWVE")
 c = 0
 # Per-user temp registration storage
 reg_buffer = {}  # user_id -> dict(phone, gender, age)
@@ -134,5 +134,6 @@ def handle_home_menu(message):
         from model import models
         response = models(message.text)
         bot.send_message(message.chat.id, response,reply_markup=exit())
+
 
 bot.polling()
