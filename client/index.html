@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление диабетом</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Экран загрузки -->
+    <div id="loading" class="screen active">
+      <div class="loader"></div>
+      <p>Загрузка...</p>
+    </div>
+
+    <!-- Экран регистрации -->
+    <div id="registration" class="screen">
+      <div class="header">
+        <h1>👤 Регистрация</h1>
+      </div>
+      <form id="registration-form" class="form">
+        <div class="form-group">
+          <label for="full_name">ФИО *</label>
+          <input type="text" id="full_name" required placeholder="Иванов Иван Иванович">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Место жительства</label>
+          <input type="text" id="location" placeholder="Город, регион">
+        </div>
+
+        <div class="form-group">
+          <label for="has_diabetes">Сахарный диабет *</label>
+          <select id="has_diabetes" required>
+            <option value="">Выберите</option>
+            <option value="1">Да</option>
+            <option value="0">Нет</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="age">Возраст *</label>
+          <input type="number" id="age" required min="1" max="120" placeholder="30">
+        </div>
+
+        <div class="form-group">
+          <label for="gender">Пол *</label>
+          <select id="gender" required>
+            <option value="">Выберите</option>
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Номер телефона</label>
+          <input type="tel" id="phone" placeholder="+7 900 123-45-67">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+      </form>
+    </div>
+
+    <!-- Главный экран -->
+    <div id="home" class="screen">
+      <div class="header">
+        <h1>🏥 Управление диабетом</h1>
+        <p id="user-name" class="user-name"></p>
+      </div>
+
+      <div class="menu-grid">
+        <button class="menu-item" onclick="showScreen('glucose')">
+          <span class="icon">🩸</span>
+          <span class="label">Уровень глюкозы</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('meal')">
+          <span class="icon">🍽️</span>
+          <span class="label">Прием пищи</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('medication')">
+          <span class="icon">💊</span>
+          <span class="label">Лекарства</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('activity')">
+          <span class="icon">🏃</span>
+          <span class="label">Активность</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('health')">
+          <span class="icon">❤️</span>
+          <span class="label">Самочувствие</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('pressure')">
+          <span class="icon">🩺</span>
+          <span class="label">Давление</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('pulse')">
+          <span class="icon">💓</span>
+          <span class="label">Пульс</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('weight')">
+          <span class="icon">⚖️</span>
+          <span class="label">Вес</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('doctor')">
+          <span class="icon">👨‍⚕️</span>
+          <span class="label">Онлайн-доктор</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('history')">
+          <span class="icon">📊</span>
+          <span class="label">История</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('export')">
+          <span class="icon">📈</span>
+          <span class="label">Экспорт данных</span>
+        </button>
+
+        <button class="menu-item" onclick="showScreen('recommendations')">
+          <span class="icon">💡</span>
+          <span class="label">Рекомендации</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Экран записи глюкозы -->
+    <div id="glucose" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>🩸 Уровень глюкозы</h1>
+      </div>
+      <form id="glucose-form" class="form">
+        <div class="form-group">
+          <label for="glucose_date">Дата *</label>
+          <input type="date" id="glucose_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="glucose_time">Время *</label>
+          <input type="time" id="glucose_time" required>
+        </div>
+
+        <div class="form-group">
+          <label for="glucose_level">Уровень глюкозы (ммоль/л) *</label>
+          <input type="number" id="glucose_level" step="0.1" min="0" max="30" required placeholder="5.5">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+
+    <!-- Экран записи приема пищи -->
+    <div id="meal" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>🍽️ Прием пищи</h1>
+      </div>
+      <form id="meal-form" class="form">
+        <div class="form-group">
+          <label for="meal_date">Дата *</label>
+          <input type="date" id="meal_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="meal_time">Время еды *</label>
+          <input type="time" id="meal_time" required>
+        </div>
+
+        <div class="form-group">
+          <label for="dish_name">Название блюда / продукты *</label>
+          <input type="text" id="dish_name" required placeholder="Гречка с курицей">
+        </div>
+
+        <div class="form-group">
+          <label for="carbs">Количество углеводов (г)</label>
+          <input type="number" id="carbs" step="0.1" min="0" placeholder="50">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+
+    <!-- Экран записи лекарств -->
+    <div id="medication" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>💊 Лекарства</h1>
+      </div>
+      <form id="medication-form" class="form">
+        <div class="form-group">
+          <label for="medication_name">Название препарата *</label>
+          <input type="text" id="medication_name" required placeholder="Инсулин">
+        </div>
+
+        <div class="form-group">
+          <label for="dose">Доза (единицы / мг) *</label>
+          <input type="text" id="dose" required placeholder="10 ед">
+        </div>
+
+        <div class="form-group">
+          <label for="administration_time">Время введения *</label>
+          <input type="datetime-local" id="administration_time" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+
+    <!-- Экран физической активности -->
+    <div id="activity" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>🏃 Физическая активность</h1>
+      </div>
+      <form id="activity-form" class="form">
+        <div class="form-group">
+          <label for="activity_date">Дата *</label>
+          <input type="date" id="activity_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="activity_type">Вид активности *</label>
+          <input type="text" id="activity_type" required placeholder="Ходьба, бег, плавание...">
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Время (минуты) *</label>
+          <input type="number" id="duration" required min="1" placeholder="30">
+        </div>
+
+        <div class="form-group">
+          <label for="intensity">Интенсивность *</label>
+          <select id="intensity" required>
+            <option value="">Выберите</option>
+            <option value="Лёгкая">Лёгкая</option>
+            <option value="Средняя">Средняя</option>
+            <option value="Высокая">Высокая</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+
+    <!-- Экран самочувствия -->
+    <div id="health" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>❤️ Самочувствие</h1>
+      </div>
+      <form id="health-form" class="form">
+        <div class="form-group">
+          <label for="health_date">Дата *</label>
+          <input type="date" id="health_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="health_time">Время *</label>
+          <input type="time" id="health_time" required>
+        </div>
+
+        <div class="form-group">
+          <label for="general_state">Общее состояние</label>
+          <select id="general_state">
+            <option value="">Выберите</option>
+            <option value="Нормально">Нормально</option>
+            <option value="Слабость">Слабость</option>
+            <option value="Жажда">Жажда</option>
+            <option value="Головокружение">Головокружение</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="symptoms">Симптомы гипо-/гипергликемии</label>
+          <textarea id="symptoms" rows="3" placeholder="Опишите симптомы..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="blood_pressure">Артериальное давление (мм рт. ст.)</label>
+          <input type="text" id="blood_pressure" placeholder="120/80">
+        </div>
+
+        <div class="form-group">
+          <label for="pulse">Пульс (уд/мин)</label>
+          <input type="number" id="pulse" min="0" max="300" placeholder="70">
+        </div>
+
+        <div class="form-group">
+          <label for="weight">Вес (кг)</label>
+          <input type="number" id="weight" step="0.1" min="0" placeholder="70.5">
+        </div>
+
+        <div class="form-group">
+          <label for="special_circumstances">Особые обстоятельства</label>
+          <textarea id="special_circumstances" rows="3" placeholder="Стресс, болезни, недосып..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+
+    <!-- Экран давления -->
+    <div id="pressure" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>🩺 Артериальное давление</h1>
+      </div>
+      <form id="pressure-form" class="form">
+        <div class="form-group">
+          <label for="pressure_date">Дата *</label>
+          <input type="date" id="pressure_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pressure_time">Время *</label>
+          <input type="time" id="pressure_time" required>
+        </div>
+
+        <div class="form-group">
+          <label for="systolic">Систолическое (верхнее) *</label>
+          <input type="number" id="systolic" required min="50" max="250" placeholder="120">
+        </div>
+
+        <div class="form-group">
+          <label for="diastolic">Диастолическое (нижнее) *</label>
+          <input type="number" id="diastolic" required min="30" max="150" placeholder="80">
+        </div>
+
+        <div class="pressure-preview">
+          <p class="text-muted">Будет записано как: <span id="pressure-display">--/--</span> мм рт. ст.</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+      
+      <div class="recent-records" id="pressure-recent"></div>
+    </div>
+
+    <!-- Экран пульса -->
+    <div id="pulse" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>💓 Пульс</h1>
+      </div>
+      <form id="pulse-form" class="form">
+        <div class="form-group">
+          <label for="pulse_date">Дата *</label>
+          <input type="date" id="pulse_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pulse_time">Время *</label>
+          <input type="time" id="pulse_time" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pulse_value">Пульс (уд/мин) *</label>
+          <input type="number" id="pulse_value" required min="30" max="220" placeholder="70">
+        </div>
+
+        <div class="pulse-indicator">
+          <div class="pulse-status" id="pulse-status">
+            <p class="text-muted">Введите значение</p>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+      
+      <div class="recent-records" id="pulse-recent"></div>
+    </div>
+
+    <!-- Экран веса -->
+    <div id="weight" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>⚖️ Вес</h1>
+      </div>
+      <form id="weight-form" class="form">
+        <div class="form-group">
+          <label for="weight_date">Дата *</label>
+          <input type="date" id="weight_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="weight_value">Вес (кг) *</label>
+          <input type="number" id="weight_value" step="0.1" required min="20" max="300" placeholder="70.5">
+        </div>
+
+        <div class="weight-info">
+          <p class="text-muted" id="weight-change">Динамика веса появится после нескольких записей</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+      
+      <div class="recent-records" id="weight-recent"></div>
+    </div>
+
+    <!-- Экран онлайн-доктора -->
+    <div id="doctor" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>👨‍⚕️ Онлайн-доктор</h1>
+      </div>
+      <div class="doctor-container">
+        <div id="messages-list" class="messages-list"></div>
+        <form id="doctor-form" class="form">
+          <div class="form-group">
+            <label for="doctor_message">Ваше сообщение врачу</label>
+            <textarea id="doctor_message" rows="4" required placeholder="Опишите вашу проблему или вопрос..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Отправить врачу</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Экран истории -->
+    <div id="history" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>📊 История записей</h1>
+      </div>
+      <div class="history-filters">
+        <input type="date" id="history_start" placeholder="От">
+        <input type="date" id="history_end" placeholder="До">
+        <button class="btn btn-secondary" onclick="loadHistory()">Загрузить</button>
+      </div>
+      <div id="history-content" class="history-content">
+        <p class="text-muted">Выберите период и нажмите "Загрузить"</p>
+      </div>
+    </div>
+
+    <!-- Экран рекомендаций -->
+    <div id="recommendations" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>💡 Рекомендации</h1>
+      </div>
+
+      <div class="recommendations-container">
+        <!-- Категории рекомендаций -->
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('glucose-tips')">
+            <h3>🩸 Контроль уровня глюкозы</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="glucose-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Когда измерять глюкозу</h4>
+              <ul>
+                <li>Натощак (до завтрака)</li>
+                <li>Через 2 часа после еды</li>
+                <li>Перед сном</li>
+                <li>При плохом самочувствии</li>
+                <li>Перед физической нагрузкой</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Целевые значения</h4>
+              <ul>
+                <li><strong>Натощак:</strong> 4.0-7.0 ммоль/л</li>
+                <li><strong>Через 2ч после еды:</strong> до 10.0 ммоль/л</li>
+                <li><strong>Перед сном:</strong> 6.0-8.0 ммоль/л</li>
+              </ul>
+              <p class="note">⚠️ Целевые значения индивидуальны - следуйте рекомендациям вашего врача</p>
+            </div>
+            <div class="recommendation-item">
+              <h4>Что делать при отклонениях</h4>
+              <p><strong>Гипогликемия (&lt;3.9 ммоль/л):</strong></p>
+              <ul>
+                <li>Съешьте 15г быстрых углеводов (3-4 куска сахара, полстакана сока)</li>
+                <li>Проверьте уровень через 15 минут</li>
+                <li>При необходимости повторите</li>
+              </ul>
+              <p><strong>Гипергликемия (&gt;13 ммоль/л):</strong></p>
+              <ul>
+                <li>Проверьте кетоны в моче</li>
+                <li>Пейте больше воды</li>
+                <li>Свяжитесь с врачом</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('nutrition-tips')">
+            <h3>🍽️ Питание и диета</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="nutrition-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Основные правила</h4>
+              <ul>
+                <li>Ешьте 5-6 раз в день небольшими порциями</li>
+                <li>Не пропускайте приёмы пищи</li>
+                <li>Контролируйте количество углеводов</li>
+                <li>Выбирайте продукты с низким гликемическим индексом</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Рекомендуемые продукты</h4>
+              <ul>
+                <li>🥗 Овощи (кроме картофеля)</li>
+                <li>🥩 Нежирное мясо и рыба</li>
+                <li>🥚 Яйца</li>
+                <li>🥛 Молочные продукты с низкой жирностью</li>
+                <li>🌾 Цельнозерновые продукты</li>
+                <li>🫘 Бобовые</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Ограничить или исключить</h4>
+              <ul>
+                <li>❌ Сахар и сладости</li>
+                <li>❌ Белый хлеб, выпечка</li>
+                <li>❌ Сладкие напитки</li>
+                <li>❌ Жирное мясо</li>
+                <li>❌ Фастфуд</li>
+                <li>❌ Алкоголь</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('pressure-tips')">
+            <h3>🩺 Измерение давления</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="pressure-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Правила измерения</h4>
+              <ul>
+                <li>Измеряйте в спокойном состоянии</li>
+                <li>Посидите 5 минут перед измерением</li>
+                <li>Не разговаривайте во время измерения</li>
+                <li>Рука на уровне сердца</li>
+                <li>Манжета плотно на плече</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Когда измерять</h4>
+              <ul>
+                <li>Утром после пробуждения</li>
+                <li>Вечером перед сном</li>
+                <li>При головной боли</li>
+                <li>При плохом самочувствии</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Целевые значения</h4>
+              <ul>
+                <li><strong>Оптимальное:</strong> 120/80 мм рт.ст.</li>
+                <li><strong>Нормальное:</strong> до 130/85</li>
+                <li><strong>Повышенное:</strong> 130-139/85-89</li>
+                <li><strong>Гипертония:</strong> ≥140/90</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('activity-tips')">
+            <h3>🏃 Физическая активность</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="activity-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Рекомендации по нагрузке</h4>
+              <ul>
+                <li>Минимум 150 минут умеренной активности в неделю</li>
+                <li>Или 75 минут интенсивной активности</li>
+                <li>Разделите на 3-5 дней</li>
+                <li>Начинайте постепенно</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Подходящие виды активности</h4>
+              <ul>
+                <li>🚶 Ходьба</li>
+                <li>🚴 Велосипед</li>
+                <li>🏊 Плавание</li>
+                <li>🧘 Йога</li>
+                <li>💃 Танцы</li>
+                <li>🏋️ Лёгкие силовые упражнения</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Меры предосторожности</h4>
+              <ul>
+                <li>Проверьте глюкозу до и после тренировки</li>
+                <li>Имейте при себе быстрые углеводы</li>
+                <li>Пейте достаточно воды</li>
+                <li>Носите удобную обувь</li>
+                <li>При глюкозе &lt;5.5 - перекусите перед тренировкой</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('foot-care-tips')">
+            <h3>👣 Уход за ногами</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="foot-care-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Ежедневный уход</h4>
+              <ul>
+                <li>Осматривайте ноги каждый день</li>
+                <li>Мойте ноги тёплой водой</li>
+                <li>Вытирайте насухо, особенно между пальцами</li>
+                <li>Наносите увлажняющий крем (не между пальцами)</li>
+                <li>Носите чистые носки из натуральных тканей</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Выбор обуви</h4>
+              <ul>
+                <li>Удобная, не тесная обувь</li>
+                <li>Без грубых швов внутри</li>
+                <li>Закрытый нос и пятка</li>
+                <li>Проверяйте обувь изнутри перед надеванием</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Когда обратиться к врачу</h4>
+              <ul>
+                <li>🚨 Раны, порезы, мозоли</li>
+                <li>🚨 Покраснение, отёк</li>
+                <li>🚨 Снижение чувствительности</li>
+                <li>🚨 Изменение цвета кожи</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('medication-tips')">
+            <h3>💊 Приём лекарств</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="medication-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Важные правила</h4>
+              <ul>
+                <li>Принимайте лекарства строго по назначению врача</li>
+                <li>Не меняйте дозу самостоятельно</li>
+                <li>Не пропускайте приём</li>
+                <li>Храните инсулин правильно (2-8°C)</li>
+                <li>Проверяйте срок годности</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Техника инъекций инсулина</h4>
+              <ul>
+                <li>Меняйте места инъекций</li>
+                <li>Соблюдайте правило "ротации"</li>
+                <li>Вводите под углом 45-90°</li>
+                <li>Не массируйте место укола</li>
+                <li>Используйте каждую иглу один раз</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-category">
+          <div class="category-header" onclick="toggleCategory('lifestyle-tips')">
+            <h3>🌟 Образ жизни</h3>
+            <span class="toggle-icon">▼</span>
+          </div>
+          <div id="lifestyle-tips" class="category-content">
+            <div class="recommendation-item">
+              <h4>Режим дня</h4>
+              <ul>
+                <li>Спите 7-8 часов</li>
+                <li>Ложитесь и вставайте в одно время</li>
+                <li>Ешьте по расписанию</li>
+                <li>Избегайте стрессов</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Что избегать</h4>
+              <ul>
+                <li>🚭 Курение</li>
+                <li>🍺 Алкоголь</li>
+                <li>😰 Стресс</li>
+                <li>😴 Недосып</li>
+                <li>🛋️ Малоподвижность</li>
+              </ul>
+            </div>
+            <div class="recommendation-item">
+              <h4>Регулярные обследования</h4>
+              <ul>
+                <li>HbA1c - каждые 3 месяца</li>
+                <li>Осмотр глаз - раз в год</li>
+                <li>Осмотр ног - при каждом визите к врачу</li>
+                <li>Анализы крови и мочи - по назначению</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="emergency-contacts">
+          <h3>🚨 Экстренные контакты</h3>
+          <div class="contact-item">
+            <p><strong>Скорая помощь:</strong> 103 или 112</p>
+          </div>
+          <div class="contact-item">
+            <p><strong>При потере сознания:</strong> немедленно вызывайте скорую</p>
+          </div>
+          <div class="contact-item">
+            <p><strong>Телефон вашего врача:</strong> <span class="editable-contact">Добавьте в профиле</span></p>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          <p>⚠️ <strong>Важно:</strong> Эти рекомендации носят общий характер. Всегда следуйте индивидуальным рекомендациям вашего лечащего врача. При ухудшении самочувствия немедленно обращайтесь за медицинской помощью.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Экран экспорта -->
+    <div id="export" class="screen">
+      <div class="header">
+        <button class="btn-back" onclick="showScreen('home')">← Назад</button>
+        <h1>📈 Экспорт данных</h1>
+      </div>
+      <div class="export-container">
+        <div class="export-section">
+          <h3>График уровня глюкозы</h3>
+          <div class="form-group">
+            <label for="chart_days">Период (дней)</label>
+            <select id="chart_days">
+              <option value="7">7 дней</option>
+              <option value="14">14 дней</option>
+              <option value="30" selected>30 дней</option>
+              <option value="90">90 дней</option>
+            </select>
+          </div>
+          <canvas id="glucoseChart"></canvas>
+          <button class="btn btn-primary" onclick="loadChart()">Построить график</button>
+        </div>
+
+        <div class="export-section">
+          <h3>Экспорт в Excel</h3>
+          <p>Выгрузите все ваши данные в формате Excel для врача</p>
+          <div class="form-group">
+            <label for="export_start">Период от</label>
+            <input type="date" id="export_start">
+          </div>
+          <div class="form-group">
+            <label for="export_end">Период до</label>
+            <input type="date" id="export_end">
+          </div>
+          <button class="btn btn-success" onclick="exportToExcel()">📥 Скачать Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
